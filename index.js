@@ -30,42 +30,47 @@ function random(min, max) {
       
   }
 
-  function Barrell(x, y, width, height, color, size){
+  function Barrell(x, y, width, height, color){
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.color = color;
-    this.size = size;
-        Barrell.prototype.draw = function(){
-            ctx.beginPath();
-            ctx.fillStyle = this.color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.fill();
+
+    this.angle = 0;
+
+    Barrell.prototype.draw = function(){
+      ctx.save();
+      ctx.translate(this.x, this.y); 
+      ctx.rotate(this.angle);        
+      ctx.fillStyle = this.color;
+      ctx.fillRect(-this.width/2, -this.height, this.width, this.height); // draw barrel centered
+      ctx.restore();
     }
   }
  
 
   let testBall = new Ball(50, 100, 4, 4, 'black', 30);
-  testBall.draw();
 
-  let testBarrell = new Barrell(45, 100, 10, 60, 'red', 40);
-  testBarrell.draw();
+  let testBarrell = new Barrell(45, 100, 10, 60, 'red');
 
 
 // ---------------------------------------------------------
 // ROTATING THE CANNON
-// <this is where I left off>
-const box = document.querySelector('canvas');
-const pageX = document.getElementById("x");
-const pageY = document.getElementById("y");
+canvas.addEventListener("mousemove", function(e) {
+  const dx = e.pageX - testBarrell.x;
+  const dy = e.pageY - testBarrell.y;
+  testBarrell.angle = Math.atan2(dy, dx);
+});
 
-function rotateCannon(event) {
-    pageX.testBarrell = event.pageX;
-    pageY.testBarrell = event.pageY;
+function loop() {
+  ctx.clearRect(0, 0, width, height);
+
+  testBall.draw();       // optional: only if you want the ball
+  testBarrell.draw();    // update barrel with current rotation
+
+  requestAnimationFrame(loop);
 }
 
-box.addEventListener("mousemove", updateDisplay, false);
-box.addEventListener("mouseenter", updateDisplay, false);
-box.addEventListener("mouseleave", updateDisplay, false);
+loop();
 
