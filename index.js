@@ -44,7 +44,7 @@ function random(min, max) {
       ctx.translate(this.x, this.y); 
       ctx.rotate(this.angle);        
       ctx.fillStyle = this.color;
-      ctx.fillRect(-this.width/2, -this.height, this.width, this.height); // draw barrel centered
+      ctx.fillRect(-this.width/3.5, -this.height, this.width, this.height); // draw barrel centered
       ctx.restore();
     }
   }
