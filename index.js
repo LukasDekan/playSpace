@@ -20,33 +20,41 @@ function random(min, max) {
     this.velY = velY;
     this.color = color;
     this.size = size;
-
-    Ball.prototype.draw = function() {
-        ctx.beginPath();
-        ctx.fillStyle = this.color;
-        ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      
+  
+    this.draw = function() {
+      ctx.beginPath();
+      ctx.fillStyle = this.color;
+      ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+      ctx.fill();
+    };
+  
+    this.update = function() {
+      this.x += this.velX;
+      this.y += this.velY;
+    };
   }
 
-  function Barrell(x, y, width, height, color){
+  function Barrell(x, y, width, height, color) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.color = color;
-
     this.angle = 0;
-
-    Barrell.prototype.draw = function(){
+  
+    this.draw = function() {
       ctx.save();
-      ctx.translate(this.x, this.y); 
-      ctx.rotate(this.angle);        
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
       ctx.fillStyle = this.color;
-      ctx.fillRect(-this.width/3.5, -this.height, this.width, this.height); // draw barrel centered
+      ctx.fillRect(-this.width / 2, -this.height, this.width, this.height);
       ctx.restore();
-    }
+    };
+  
+    this.update = function(x, y) {
+      this.x = x;
+      this.y = y;
+    };
   }
  
 
@@ -63,11 +71,36 @@ canvas.addEventListener("mousemove", function(e) {
   testBarrell.angle = Math.atan2(dy, dx);
 });
 
+let keys = {};
+
+document.addEventListener("keydown", (e) => {
+  keys[e.code] = true;
+});
+
+document.addEventListener("keyup", (e) => {
+  keys[e.code] = false;
+});
+
 function loop() {
   ctx.clearRect(0, 0, width, height);
 
-  testBall.draw();       // optional: only if you want the ball
-  testBarrell.draw();    // update barrel with current rotation
+  // Apply "force"
+  if (keys["KeyW"]) testBall.velY -= 0.4;
+  if (keys["KeyS"]) testBall.velY += 0.4;
+  if (keys["KeyA"]) testBall.velX -= 0.4;
+  if (keys["KeyD"]) testBall.velX += 0.4;
+
+  // Apply friction (optional)
+  testBall.velX *= 0.9;
+  testBall.velY *= 0.9;
+
+  // Update positions
+  testBall.update();
+  testBarrell.update(testBall.x, testBall.y);
+
+  // Draw
+  testBall.draw();
+  testBarrell.draw();
 
   requestAnimationFrame(loop);
 }
